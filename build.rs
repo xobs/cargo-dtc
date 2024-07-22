@@ -15,8 +15,8 @@ const DTC_FILES: &[&str] = &[
 ];
 
 fn main() {
-    let mut version_file = File::create("dtc/version_gen.h").unwrap();
-    writeln!(version_file, "#define DTC_VERSION \"DTC rust\"").unwrap();
+    let mut version_file = File::create("dtc/include/version_gen.h").unwrap();
+    writeln!(version_file, "#define DTC_VERSION \"{} (rust)\"", env!("CARGO_PKG_VERSION")).unwrap();
     drop(version_file);
 
     let mut build = cc::Build::new();
