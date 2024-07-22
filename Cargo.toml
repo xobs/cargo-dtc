@@ -3,6 +3,9 @@ name = "cargo-dtc"
 version = "1.7.0"
 edition = "2021"
 license = "GPL-2.0-or-later"
+description = "Devicetree Compiler packaged for building with cargo"
+authors = ["Sean Cross"]
+repository = "https://github.com/xobs/cargo-dtc"
 
 [[bin]]
 bench = false
