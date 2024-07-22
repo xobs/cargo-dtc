@@ -5,7 +5,13 @@ extern "C" {
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
+    // If this command is run as `cargo dtc`, then the first argument is `cargo`.
+    // Strip it off so that the first argument is `dtc`.
+    let mut args = std::env::args().collect::<Vec<String>>();
+    if args.get(1).map(|x| x == "dtc").unwrap_or(false) {
+        args.remove(0);
+    }
+
     // convert args to a standard C-style `argc, argv`
     let args_c: Vec<CString> = args.iter().map(|arg| CString::new(arg.as_str()).unwrap()).collect();
     let args_c: Vec<*const i8> = args_c.iter().map(|arg| arg.as_ptr()).collect();
