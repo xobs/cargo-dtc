@@ -29,7 +29,7 @@ The following changes were made:
 * The `main()` function was renamed to `dtc_main()` and is wrapped by Rust.
 * `strcasecmp` is renamed to `_stricmp` inside `dtc.c` via a macro.
 * On Windows, `getopt.c` was taken from <https://github.com/Chunde/getopt-for-windows> as a drop-in replacement for the one from glibc.
-*On Windows,  `dirent.h` was taken from <https://github.com/tronkko/dirent>.
+* On Windows,  `dirent.h` was taken from <https://github.com/tronkko/dirent>.
 * On Windows, a fake `unistd.h` was added that renames `main` and chain-includes `dirent.h` to define `S_ISDIR` and `S_ISREG`.
 * On other platforms, `build.rs` performs the rename of `main`.
 * A fake `version_gen.h` gets generated indicating it comes from Rust.
