@@ -230,7 +230,7 @@ static void write_propval(FILE *f, struct property *prop)
 
 	for_each_marker(m) {
 		size_t chunk_len = (m->next ? m->next->offset : len) - m->offset;
-		size_t data_len = type_marker_length(m) ? 0 : len - m->offset;
+		size_t data_len = type_marker_length(m) ? type_marker_length(m) : len - m->offset;
 		const char *p = &prop->val.val[m->offset];
 		struct marker *m_phandle;
 
@@ -281,7 +281,7 @@ static void write_propval(FILE *f, struct property *prop)
 		if (chunk_len == data_len) {
 			size_t pos = m->offset + chunk_len;
 			fprintf(f, pos == len ? "%s" : "%s,",
-			        delim_end[emit_type] ? 0 : "");
+			        delim_end[emit_type] ? delim_end[emit_type] : "");
 			emit_type = TYPE_NONE;
 		}
 	}
