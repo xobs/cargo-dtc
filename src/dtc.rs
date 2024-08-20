@@ -1,13 +1,14 @@
+use core::ffi::{c_char, c_int};
 use std::ffi::CString;
 
 extern "C" {
-    fn dtc_main(argc: core::ffi::c_int, argv: *const *const core::ffi::c_char) -> core::ffi::c_int;
+    fn dtc_main(argc: c_int, argv: *const *const c_char) -> c_int;
 }
 
 fn dtc(args: &[&str]) -> usize {
     // convert args to a standard C-style `argc, argv`
     let args_c: Vec<CString> = args.iter().map(|arg| CString::new(*arg).unwrap()).collect();
-    let args_c: Vec<*const i8> = args_c.iter().map(|arg| arg.as_ptr()).collect();
+    let args_c: Vec<*const c_char> = args_c.iter().map(|arg| arg.as_ptr() as _).collect();
 
     unsafe { dtc_main(args_c.len() as _, args_c.as_slice().as_ptr() as _) as _ }
 }
