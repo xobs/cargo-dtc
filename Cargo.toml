@@ -1,6 +1,6 @@
 [package]
 name = "cargo-dtc"
-version = "1.7.2"
+version = "1.7.3"
 edition = "2021"
 license = "GPL-2.0-or-later"
 description = "Devicetree Compiler packaged for building with cargo"
