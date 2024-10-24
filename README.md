@@ -33,3 +33,8 @@ The following changes were made:
 * On Windows, a fake `unistd.h` was added that renames `main` and chain-includes `dirent.h` to define `S_ISDIR` and `S_ISREG`.
 * On other platforms, `build.rs` performs the rename of `main`.
 * A fake `version_gen.h` gets generated indicating it comes from Rust.
+
+## A note on version numbers
+
+The version numbers are, unfortunately, out of sync with upstream. This will
+continue until upstream dtc reaches version 1.7.4.
