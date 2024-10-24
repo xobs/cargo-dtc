@@ -37,4 +37,4 @@ The following changes were made:
 ## A note on version numbers
 
 The version numbers are, unfortunately, out of sync with upstream. This will
-continue until upstream dtc reaches version 1.7.4.
+continue until upstream dtc reaches version 1.8.0.
