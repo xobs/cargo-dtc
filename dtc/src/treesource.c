@@ -139,26 +139,48 @@ static const char *delim_end[] = {
 	[TYPE_STRING] = "",
 };
 
+/*
+ * The invariants in the marker list are:
+ *  - offsets are non-strictly monotonically increasing
+ *  - for a single offset there is at most one type marker
+ *  - for a single offset that has both a type marker and non-type markers, the
+ *    type marker appears before the others.
+ */
+static struct marker **add_marker(struct marker **mi,
+				  enum markertype type, unsigned int offset, char *ref)
+{
+	struct marker *nm;
+
+	while (*mi && (*mi)->offset < offset)
+		mi = &(*mi)->next;
+
+	if (*mi && (*mi)->offset == offset && is_type_marker((*mi)->type)) {
+		if (is_type_marker(type))
+			return mi;
+		mi = &(*mi)->next;
+	}
+
+	if (*mi && (*mi)->offset == offset && type == (*mi)->type)
+		return mi;
+
+	nm = xmalloc(sizeof(*nm));
+	nm->type = type;
+	nm->offset = offset;
+	nm->ref = ref;
+	nm->next = *mi;
+	*mi = nm;
+
+	return &nm->next;
+}
+
 static void add_string_markers(struct property *prop)
 {
 	int l, len = prop->val.len;
 	const char *p = prop->val.val;
+	struct marker **mi = &prop->val.markers;
 
-	for (l = strlen(p) + 1; l < len; l += strlen(p + l) + 1) {
-		struct marker *m, **nextp;
-
-		m = xmalloc(sizeof(*m));
-		m->offset = l;
-		m->type = TYPE_STRING;
-		m->ref = NULL;
-		m->next = NULL;
-
-		/* Find the end of the markerlist */
-		nextp = &prop->val.markers;
-		while (*nextp)
-			nextp = &((*nextp)->next);
-		*nextp = m;
-	}
+	for (l = strlen(p) + 1; l < len; l += strlen(p + l) + 1)
+		mi = add_marker(mi, TYPE_STRING, l, NULL);
 }
 
 static enum markertype guess_value_type(struct property *prop)
@@ -230,7 +252,7 @@ static void write_propval(FILE *f, struct property *prop)
 
 	for_each_marker(m) {
 		size_t chunk_len = (m->next ? m->next->offset : len) - m->offset;
-		size_t data_len = type_marker_length(m) ? type_marker_length(m) : len - m->offset;
+		size_t data_len = type_marker_length(m) ? : len - m->offset;
 		const char *p = &prop->val.val[m->offset];
 		struct marker *m_phandle;
 
@@ -281,7 +303,7 @@ static void write_propval(FILE *f, struct property *prop)
 		if (chunk_len == data_len) {
 			size_t pos = m->offset + chunk_len;
 			fprintf(f, pos == len ? "%s" : "%s,",
-			        delim_end[emit_type] ? delim_end[emit_type] : "");
+			        delim_end[emit_type] ? : "");
 			emit_type = TYPE_NONE;
 		}
 	}
